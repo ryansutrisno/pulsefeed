@@ -14,6 +14,7 @@ import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { ProfilePage } from '@/pages/ProfilePage';
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <HomePage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
       },
     ],
   },

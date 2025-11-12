@@ -48,9 +48,14 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
   // POSTS
   app.get('/api/posts', async (c) => {
     await PostEntity.ensureSeed(c.env);
-    const cursor = c.req.query('cursor');
+    const shuffle = c.req.query('shuffle') === 'true';
     const limitQuery = c.req.query('limit');
     const limit = limitQuery ? parseInt(limitQuery, 10) : 9;
+    if (shuffle) {
+      const shuffledPosts = await PostEntity.listShuffled(c.env, limit);
+      return ok(c, { items: shuffledPosts, next: null });
+    }
+    const cursor = c.req.query('cursor');
     const page = await PostEntity.list(c.env, cursor ?? null, limit);
     return ok(c, page);
   });

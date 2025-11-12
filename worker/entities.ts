@@ -1,7 +1,7 @@
 /**
  * Minimal real-world demo: One Durable Object instance per entity (User, ChatBoard), with Indexes for listing.
  */
-import { IndexedEntity } from "./core-utils";
+import { Env, Index, IndexedEntity } from "./core-utils";
 import type { User, Chat, ChatMessage, Post } from "@shared/types";
 import { MOCK_CHAT_MESSAGES, MOCK_CHATS, MOCK_USERS } from "@shared/mock-data";
 // USER ENTITY: one DO instance per user
@@ -363,4 +363,16 @@ export class PostEntity extends IndexedEntity<Post> {
     createdAt: new Date().toISOString(),
   };
   static seedData = MOCK_POSTS;
+  static async listShuffled(env: Env, limit: number): Promise<Post[]> {
+    const idx = new Index<string>(env, this.indexName);
+    const ids = await idx.list();
+    // Fisher-Yates (aka Knuth) Shuffle
+    for (let i = ids.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [ids[i], ids[j]] = [ids[j], ids[i]];
+    }
+    const shuffledSlice = ids.slice(0, limit);
+    const rows = (await Promise.all(shuffledSlice.map((id) => new this(env, id).getState()))) as Post[];
+    return rows;
+  }
 }

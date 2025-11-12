@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { LogOut } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 export function UserNav() {
   const user = useAuthStore(s => s.user);
   const logout = useAuthStore(s => s.logout);
@@ -47,6 +47,10 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>

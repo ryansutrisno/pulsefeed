@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PostCard } from '@/components/PostCard';
 import { PostSkeleton } from '@/components/PostSkeleton';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Waves } from 'lucide-react';
+import { Waves, RefreshCw } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { PostDetail } from '@/components/PostDetail';
 import { PostLoader } from '@/components/PostLoader';
@@ -18,6 +18,7 @@ export function HomePage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [sort, setSort] = useState<SortType>('trending');
@@ -68,10 +69,20 @@ export function HomePage() {
   useEffect(() => {
     fetchInitialPosts();
   }, []);
-  const handleFilterChange = (newFilter: FilterType) => {
-    if (newFilter === filter) return;
-    setFilter(newFilter);
-    fetchInitialPosts();
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const { items } = await api<{ items: Post[]; next: string | null }>(`/api/posts?shuffle=true&limit=9`);
+      setPosts(items);
+      setNextCursor(null); // Shuffled results are not paginated
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      toast.success("Feed refreshed!");
+    } catch (error) {
+      toast.error('Failed to refresh feed.');
+      console.error(error);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
   const filteredAndSortedPosts = useMemo(() => {
     let result = posts;
@@ -116,19 +127,24 @@ export function HomePage() {
           >
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => handleFilterChange('all')}>All</Button>
-                <Button variant={filter === 'instagram' ? 'default' : 'outline'} onClick={() => handleFilterChange('instagram')}>Instagram</Button>
-                <Button variant={filter === 'threads' ? 'default' : 'outline'} onClick={() => handleFilterChange('threads')}>Threads</Button>
+                <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => setFilter('all')}>All</Button>
+                <Button variant={filter === 'instagram' ? 'default' : 'outline'} onClick={() => setFilter('instagram')}>Instagram</Button>
+                <Button variant={filter === 'threads' ? 'default' : 'outline'} onClick={() => setFilter('threads')}>Threads</Button>
               </div>
-              <Select value={sort} onValueChange={(value: SortType) => setSort(value)}>
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="trending">Trending</SelectItem>
-                  <SelectItem value="newest">Newest</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Select value={sort} onValueChange={(value: SortType) => setSort(value)}>
+                  <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="trending">Trending</SelectItem>
+                    <SelectItem value="newest">Newest</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isRefreshing}>
+                  <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                </Button>
+              </div>
             </div>
           </motion.div>
           <div className="pb-16 md:pb-24 lg:pb-32">
@@ -162,7 +178,7 @@ export function HomePage() {
           </div>
         </main>
         <footer className="text-center py-8 border-t space-y-2">
-          <p className="text-muted-foreground">Built with ❤️ at Cloudflare</p>
+          <p className="text-muted-foreground">Built with ���️ at Cloudflare</p>
           <p className="text-xs text-muted-foreground/80 px-4">
             Disclaimer: All content is for demonstration purposes only and is not from live Instagram or Threads APIs.
           </p>
