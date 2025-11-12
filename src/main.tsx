@@ -13,6 +13,7 @@ import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { TooltipProvider } from '@/components/ui/tooltip';
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -34,7 +35,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <RouterProvider router={router} />
+      <TooltipProvider>
+        <RouterProvider router={router} />
+      </TooltipProvider>
     </ErrorBoundary>
   </StrictMode>,
 )
