@@ -6,11 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, Heart, Repeat, Send, Instagram } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { useMemo } from "react";
-import { cn } from "@/lib/utils";
-import { usePostInteractionStore } from "@/stores/postInteractionStore";
-import { motion } from "framer-motion";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { toast } from "sonner";
+// A custom component for the Threads icon
 const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -26,46 +22,13 @@ const formatNumber = (num: number): string => {
   if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
   return num.toString();
 };
-interface PostCardProps {
-    post: Post;
-    onPostSelect: (post: Post) => void;
-    className?: string;
-}
-export function PostCard({ post, onPostSelect, className }: PostCardProps) {
-  const isLiked = usePostInteractionStore(state => state.isLiked(post.id));
-  const toggleLike = usePostInteractionStore(state => state.toggleLike);
+export function PostCard({ post }: { post: Post }) {
   const timeAgo = useMemo(() => {
     return formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
   }, [post.createdAt]);
-  const handleLikeClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    toggleLike(post.id);
-  };
-  const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const shareData = {
-      title: `Check out this post from ${post.authorName}`,
-      text: post.content.substring(0, 100) + '...',
-      url: window.location.href, // In a real app, this would be a direct link to the post
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        throw new Error('Web Share API not supported');
-      }
-    } catch (err) {
-      navigator.clipboard.writeText(shareData.url);
-      toast.success("Link copied to clipboard!");
-    }
-  };
-  const optimisticLikes = post.likes + (isLiked ? 1 : 0);
   const PlatformIcon = post.platform === 'instagram' ? Instagram : ThreadsIcon;
   return (
-    <Card
-        className={cn("overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col h-full cursor-pointer", className)}
-        onClick={() => onPostSelect(post)}
-    >
+    <Card className="overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col h-full">
       <CardHeader className="flex flex-row items-center gap-3 p-4">
         <Avatar>
           <AvatarImage src={post.authorAvatar} alt={post.authorName} />
@@ -78,7 +41,7 @@ export function PostCard({ post, onPostSelect, className }: PostCardProps) {
         <PlatformIcon className="w-5 h-5 text-muted-foreground" />
       </CardHeader>
       <CardContent className="p-4 pt-0 flex-1">
-        <p className="text-sm mb-4 whitespace-pre-wrap line-clamp-4">{post.content}</p>
+        <p className="text-sm mb-4 whitespace-pre-wrap">{post.content}</p>
         {post.mediaUrl && (
           <div className="rounded-lg overflow-hidden border">
             <AspectRatio ratio={post.mediaAspectRatio || 16 / 9}>
@@ -95,46 +58,24 @@ export function PostCard({ post, onPostSelect, className }: PostCardProps) {
         <p className="text-xs text-muted-foreground mb-3">{timeAgo}</p>
         <div className="flex items-center justify-between w-full text-muted-foreground">
           <div className="flex items-center gap-4">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="w-auto h-auto p-1 group -ml-1" onClick={handleLikeClick}>
-                  <motion.div animate={{ scale: isLiked ? [1, 1.3, 1] : 1 }} transition={{ duration: 0.3 }}>
-                    <Heart className={cn("w-5 h-5 group-hover:text-red-500 transition-colors", isLiked && "fill-red-500 text-red-500")} />
-                  </motion.div>
-                  <span className="text-sm ml-2 font-medium">{formatNumber(optimisticLikes)}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent><p>Like</p></TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center group cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                  <MessageCircle className="w-5 h-5" />
-                  <span className="text-sm ml-2 font-medium">{formatNumber(post.comments)}</span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent><p>Comment</p></TooltipContent>
-            </Tooltip>
+            <Button variant="ghost" size="icon" className="w-auto h-auto p-1 group">
+              <Heart className="w-5 h-5 group-hover:text-red-500 group-hover:fill-red-500 transition-colors" />
+              <span className="text-sm ml-2 font-medium">{formatNumber(post.likes)}</span>
+            </Button>
+            <Button variant="ghost" size="icon" className="w-auto h-auto p-1 group">
+              <MessageCircle className="w-5 h-5 group-hover:text-primary transition-colors" />
+              <span className="text-sm ml-2 font-medium">{formatNumber(post.comments)}</span>
+            </Button>
             {post.platform === 'threads' && post.shares != null && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center group cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                    <Repeat className="w-5 h-5" />
-                    <span className="text-sm ml-2 font-medium">{formatNumber(post.shares)}</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent><p>Repost</p></TooltipContent>
-              </Tooltip>
+              <Button variant="ghost" size="icon" className="w-auto h-auto p-1 group">
+                <Repeat className="w-5 h-5 group-hover:text-green-500 transition-colors" />
+                <span className="text-sm ml-2 font-medium">{formatNumber(post.shares)}</span>
+              </Button>
             )}
           </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="group -mr-2" onClick={handleShare}>
-                <Send className="w-5 h-5 group-hover:text-primary transition-colors" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent><p>Share</p></TooltipContent>
-          </Tooltip>
+          <Button variant="ghost" size="icon" className="group">
+            <Send className="w-5 h-5 group-hover:text-primary transition-colors" />
+          </Button>
         </div>
       </CardFooter>
     </Card>
