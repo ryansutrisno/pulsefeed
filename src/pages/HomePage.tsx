@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Post } from '@shared/types';
 import { api } from '@/lib/api-client';
 import { Toaster, toast } from '@/components/ui/sonner';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PostCard } from '@/components/PostCard';
@@ -12,6 +11,7 @@ import { Waves } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { PostDetail } from '@/components/PostDetail';
 import { PostLoader } from '@/components/PostLoader';
+import { UserNav } from '@/components/UserNav';
 type FilterType = 'all' | 'instagram' | 'threads';
 type SortType = 'trending' | 'newest';
 export function HomePage() {
@@ -71,12 +71,6 @@ export function HomePage() {
   const handleFilterChange = (newFilter: FilterType) => {
     if (newFilter === filter) return;
     setFilter(newFilter);
-    // Reset posts and fetch from the beginning for the new filter
-    // Note: The actual filtering is client-side, but resetting ensures
-    // that if a user filters down to a small list, they can still
-    // infinite-scroll to load more items that match that filter.
-    // For a pure client-side filter without re-fetching, we would just setFilter.
-    // However, re-fetching on filter change provides a better UX for discovery.
     fetchInitialPosts();
   };
   const filteredAndSortedPosts = useMemo(() => {
@@ -94,7 +88,7 @@ export function HomePage() {
   return (
     <Dialog open={!!selectedPost} onOpenChange={(isOpen) => !isOpen && setSelectedPost(null)}>
       <div className="min-h-screen bg-background text-foreground">
-        <ThemeToggle className="fixed top-4 right-4 z-50" />
+        <UserNav />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-16 md:py-24 lg:py-32 text-center relative">
             <div className="absolute inset-0 -z-10 bg-gradient-hero opacity-50 dark:opacity-100" />
@@ -168,7 +162,7 @@ export function HomePage() {
           </div>
         </main>
         <footer className="text-center py-8 border-t space-y-2">
-          <p className="text-muted-foreground">Built with ❤��� at Cloudflare</p>
+          <p className="text-muted-foreground">Built with ❤️ at Cloudflare</p>
           <p className="text-xs text-muted-foreground/80 px-4">
             Disclaimer: All content is for demonstration purposes only and is not from live Instagram or Threads APIs.
           </p>
