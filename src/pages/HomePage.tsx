@@ -33,30 +33,6 @@ export function HomePage() {
     });
     if (node) observer.current.observe(node);
   }, [initialLoading, loadingMore, nextCursor]);
-  const fetchPosts = async (isNewFilter = false) => {
-    if (isNewFilter) {
-      setInitialLoading(true);
-      setPosts([]);
-      setNextCursor(null);
-    } else {
-      setLoadingMore(true);
-    }
-    try {
-      const url = `/api/posts?limit=9${nextCursor && !isNewFilter ? `&cursor=${nextCursor}` : ''}`;
-      const { items, next } = await api<{ items: Post[]; next: string | null }>(url);
-      setPosts(prevPosts => isNewFilter ? items : [...prevPosts, ...items]);
-      setNextCursor(next);
-    } catch (error) {
-      toast.error('Failed to fetch posts. Please try again later.');
-      console.error(error);
-    } finally {
-      if (isNewFilter) {
-        setInitialLoading(false);
-      } else {
-        setLoadingMore(false);
-      }
-    }
-  };
   const fetchInitialPosts = () => {
     setInitialLoading(true);
     setPosts([]);
@@ -92,6 +68,17 @@ export function HomePage() {
   useEffect(() => {
     fetchInitialPosts();
   }, []);
+  const handleFilterChange = (newFilter: FilterType) => {
+    if (newFilter === filter) return;
+    setFilter(newFilter);
+    // Reset posts and fetch from the beginning for the new filter
+    // Note: The actual filtering is client-side, but resetting ensures
+    // that if a user filters down to a small list, they can still
+    // infinite-scroll to load more items that match that filter.
+    // For a pure client-side filter without re-fetching, we would just setFilter.
+    // However, re-fetching on filter change provides a better UX for discovery.
+    fetchInitialPosts();
+  };
   const filteredAndSortedPosts = useMemo(() => {
     let result = posts;
     if (filter !== 'all') {
@@ -135,9 +122,9 @@ export function HomePage() {
           >
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => setFilter('all')}>All</Button>
-                <Button variant={filter === 'instagram' ? 'default' : 'outline'} onClick={() => setFilter('instagram')}>Instagram</Button>
-                <Button variant={filter === 'threads' ? 'default' : 'outline'} onClick={() => setFilter('threads')}>Threads</Button>
+                <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => handleFilterChange('all')}>All</Button>
+                <Button variant={filter === 'instagram' ? 'default' : 'outline'} onClick={() => handleFilterChange('instagram')}>Instagram</Button>
+                <Button variant={filter === 'threads' ? 'default' : 'outline'} onClick={() => handleFilterChange('threads')}>Threads</Button>
               </div>
               <Select value={sort} onValueChange={(value: SortType) => setSort(value)}>
                 <SelectTrigger className="w-full sm:w-[180px]">
@@ -161,7 +148,7 @@ export function HomePage() {
                   layout
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
                 >
-                  {filteredAndSortedPosts.map((post, index) => (
+                  {filteredAndSortedPosts.map((post) => (
                     <motion.div
                       key={post.id}
                       layout
