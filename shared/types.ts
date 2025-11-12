@@ -43,4 +43,5 @@ export interface Post {
   shares?: number; // Threads has shares/reposts
   createdAt: string; // ISO 8601 string
   mockComments?: Comment[];
+  isLiked?: boolean;
 }

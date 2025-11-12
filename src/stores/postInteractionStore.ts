@@ -5,11 +5,6 @@ interface PostInteractionState {
   toggleLike: (postId: string) => void;
   isLiked: (postId: string) => boolean;
 }
-// Type for the serialized Set object in localStorage
-interface SerializedSet {
-  dataType: 'Set';
-  value: unknown[];
-}
 export const usePostInteractionStore = create<PostInteractionState>()(
   persist(
     (set, get) => ({
@@ -38,12 +33,8 @@ export const usePostInteractionStore = create<PostInteractionState>()(
           return value;
         },
         reviver: (key, value) => {
-          // Type guard to safely handle rehydration of Set from localStorage
-          if (typeof value === 'object' && value !== null) {
-            const potentialSet = value as SerializedSet;
-            if (potentialSet.dataType === 'Set' && Array.isArray(potentialSet.value)) {
-              return new Set(potentialSet.value);
-            }
+          if (typeof value === 'object' && value !== null && value.dataType === 'Set') {
+            return new Set(value.value);
           }
           return value;
         },

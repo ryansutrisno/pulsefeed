@@ -7,7 +7,8 @@ import { MessageCircle, Heart, Repeat, Send, Instagram } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-// A custom component for the Threads icon
+import { usePostInteractionStore } from "@/stores/postInteractionStore";
+import { motion } from "framer-motion";
 const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -29,12 +30,19 @@ interface PostCardProps {
     className?: string;
 }
 export function PostCard({ post, onPostSelect, className }: PostCardProps) {
+  const isLiked = usePostInteractionStore(state => state.isLiked(post.id));
+  const toggleLike = usePostInteractionStore(state => state.toggleLike);
   const timeAgo = useMemo(() => {
     return formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
   }, [post.createdAt]);
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleLike(post.id);
+  };
+  const optimisticLikes = post.likes + (isLiked ? 1 : 0);
   const PlatformIcon = post.platform === 'instagram' ? Instagram : ThreadsIcon;
   return (
-    <Card 
+    <Card
         className={cn("overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col h-full cursor-pointer", className)}
         onClick={() => onPostSelect(post)}
     >
@@ -67,10 +75,15 @@ export function PostCard({ post, onPostSelect, className }: PostCardProps) {
         <p className="text-xs text-muted-foreground mb-3">{timeAgo}</p>
         <div className="flex items-center justify-between w-full text-muted-foreground">
           <div className="flex items-center gap-4">
-            <div className="flex items-center group">
-              <Heart className="w-5 h-5" />
-              <span className="text-sm ml-2 font-medium">{formatNumber(post.likes)}</span>
-            </div>
+            <Button variant="ghost" size="icon" className="w-auto h-auto p-1 group -ml-1" onClick={handleLikeClick}>
+              <motion.div
+                animate={{ scale: isLiked ? [1, 1.3, 1] : 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Heart className={cn("w-5 h-5 group-hover:text-red-500 transition-colors", isLiked && "fill-red-500 text-red-500")} />
+              </motion.div>
+              <span className="text-sm ml-2 font-medium">{formatNumber(optimisticLikes)}</span>
+            </Button>
             <div className="flex items-center group">
               <MessageCircle className="w-5 h-5" />
               <span className="text-sm ml-2 font-medium">{formatNumber(post.comments)}</span>
