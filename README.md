@@ -8,7 +8,7 @@ This approach was chosen for critical technical and security reasons:
 -   **Security & Architectural Constraints:** Live API integration requires complex, server-side OAuth 2.0 flows and the secure storage and refreshment of client secrets and access tokens. The secure, serverless architecture of this project is optimized for high-performance edge computation and explicitly prohibits the backend infrastructure necessary for managing these sensitive, long-lived credentials.
 -   **Stable & High-Performance Demo:** A static dataset ensures a consistent, fast, and reliable experience for all users, which is paramount for a demonstration environment. This avoids the complexities of live API rate limits, data inconsistencies, and potential downtime.
 -   **Focus on Frontend Excellence:** The primary goal is to showcase a best-in-class user interface, fluid interactions, and a visually stunning frontend architecture. The mock data approach allows us to deliver on this goal without compromise.
-The "Refresh Feed" feature simulates new content by shuffling the existing dataset, providing a dynamic feel while maintaining the performance and stability of the demonstration.
+The "Refresh Feed" feature simulates new content by shuffling the existing dataset, providing a dynamic feel while maintaining the performance and stability of the demonstration. The use of mock data is a deliberate and final design decision dictated by the platform's architectural constraints, framing the project as a complete and polished demonstration of frontend capabilities.
 ## Key Features
 -   **Unified Feed:** View trending content from Instagram and Threads in one place.
 -   **Minimalist UI:** A clean, card-based layout that prioritizes content.

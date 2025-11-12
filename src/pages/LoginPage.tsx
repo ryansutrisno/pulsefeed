@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Instagram, Waves } from 'lucide-react';
+import { Instagram, Waves, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -45,6 +46,13 @@ export function LoginPage() {
             <CardDescription>Sign in to view the latest viral content.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertTitle>Demonstration Mode</AlertTitle>
+              <AlertDescription>
+                This is a UI/UX prototype using mock data. Live API integration is not available due to platform constraints.
+              </AlertDescription>
+            </Alert>
             <Button
               className="w-full transition-all hover:scale-105 active:scale-95"
               onClick={() => handleLogin('instagram')}
