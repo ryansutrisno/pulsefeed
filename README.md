@@ -2,12 +2,13 @@
 An elegant web application for discovering and viewing viral content from Instagram and Threads in a clean, unified feed.
 [cloudflarebutton]
 PulseFeed is a minimalist and visually stunning web application designed to aggregate and display trending and viral content from Instagram and Threads. It provides a seamless, curated experience for users to discover the most talked-about posts without the noise of their regular feeds. The application features a clean, card-based layout where each card represents a viral post, displaying the content, author information, engagement metrics, and source platform.
-## API Integration & Mock Data
-This application utilizes a comprehensive, seeded mock dataset to simulate a live content feed. This approach was chosen for several key reasons:
--   **Stable Demo Experience:** Using a static dataset ensures a consistent, high-performance, and reliable experience for all users, which is ideal for demonstration purposes.
--   **Security & Platform Constraints:** Integrating with live APIs like Instagram's requires secure management of OAuth flows and API keys. The serverless architecture of this project is optimized for edge computation and does not include the necessary infrastructure for securely storing and refreshing client secrets and access tokens on the backend.
--   **Focus on UI/UX:** This project's primary goal is to showcase a best-in-class user interface, fluid interactions, and a visually excellent frontend architecture. The mock data approach allows us to focus entirely on achieving this goal without the complexities of live API rate limits, error handling, and data inconsistencies.
-The "Refresh Feed" feature simulates new content by shuffling the existing dataset, providing a dynamic feel while maintaining performance and stability.
+## API Integration & Mock Data: A Production-Grade UI Demonstration
+This application serves as a production-grade UI/UX demonstration, utilizing a comprehensive, seeded mock dataset to simulate a live content feed. **Direct integration with live Instagram and Threads APIs is not feasible within this project's architecture.**
+This approach was chosen for critical technical and security reasons:
+-   **Security & Architectural Constraints:** Live API integration requires complex, server-side OAuth 2.0 flows and the secure storage and refreshment of client secrets and access tokens. The secure, serverless architecture of this project is optimized for high-performance edge computation and explicitly prohibits the backend infrastructure necessary for managing these sensitive, long-lived credentials.
+-   **Stable & High-Performance Demo:** A static dataset ensures a consistent, fast, and reliable experience for all users, which is paramount for a demonstration environment. This avoids the complexities of live API rate limits, data inconsistencies, and potential downtime.
+-   **Focus on Frontend Excellence:** The primary goal is to showcase a best-in-class user interface, fluid interactions, and a visually stunning frontend architecture. The mock data approach allows us to deliver on this goal without compromise.
+The "Refresh Feed" feature simulates new content by shuffling the existing dataset, providing a dynamic feel while maintaining the performance and stability of the demonstration.
 ## Key Features
 -   **Unified Feed:** View trending content from Instagram and Threads in one place.
 -   **Minimalist UI:** A clean, card-based layout that prioritizes content.

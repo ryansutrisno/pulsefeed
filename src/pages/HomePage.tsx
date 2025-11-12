@@ -12,6 +12,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { PostDetail } from '@/components/PostDetail';
 import { PostLoader } from '@/components/PostLoader';
 import { UserNav } from '@/components/UserNav';
+import { EmptyState } from '@/components/EmptyState';
 type FilterType = 'all' | 'instagram' | 'threads';
 type SortType = 'trending' | 'newest';
 export function HomePage() {
@@ -152,6 +153,11 @@ export function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 {Array.from({ length: 9 }).map((_, i) => <PostSkeleton key={i} />)}
               </div>
+            ) : filteredAndSortedPosts.length === 0 ? (
+              <EmptyState
+                title="No Posts Found"
+                message="Try adjusting your filters to discover more viral content."
+              />
             ) : (
               <AnimatePresence>
                 <motion.div
@@ -178,7 +184,7 @@ export function HomePage() {
           </div>
         </main>
         <footer className="text-center py-8 border-t space-y-2">
-          <p className="text-muted-foreground">Built with ���️ at Cloudflare</p>
+          <p className="text-muted-foreground">Built with ❤️ at Cloudflare</p>
           <p className="text-xs text-muted-foreground/80 px-4">
             Disclaimer: All content is for demonstration purposes only and is not from live Instagram or Threads APIs.
           </p>

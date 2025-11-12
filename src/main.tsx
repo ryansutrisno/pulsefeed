@@ -15,6 +15,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ProfilePage } from '@/pages/ProfilePage';
+import { SettingsPage } from '@/pages/SettingsPage';
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/settings",
+        element: <SettingsPage />,
       },
     ],
   },

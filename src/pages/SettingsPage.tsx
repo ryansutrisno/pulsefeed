@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Bell, Palette, Shield, Info } from 'lucide-react';
+import { ArrowLeft, Bell, Palette, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { UserNav } from '@/components/UserNav';
 import { Label } from '@/components/ui/label';
@@ -54,7 +54,7 @@ export function SettingsPage() {
                         <Label htmlFor="system">System</Label>
                       </div>
                     </RadioGroup>
-                    <p className="text-sm text-muted-foreground mt-2">Note: This is a mock setting. Use the ��️/🌙 toggle to change themes.</p>
+                    <p className="text-sm text-muted-foreground mt-2">Note: This is a mock setting. Use the ☀️/🌙 toggle to change themes.</p>
                   </div>
                 </div>
                 <Separator />
@@ -87,18 +87,6 @@ export function SettingsPage() {
                    <div className="pl-7">
                      <Button variant="outline" disabled>Change Password</Button>
                    </div>
-                </div>
-                <Separator />
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center"><Info className="mr-2 h-5 w-5" /> Developer</h3>
-                  <div className="pl-7 flex flex-col items-start gap-2">
-                    <p className="text-sm text-muted-foreground">
-                      Learn more about the technical architecture of this application.
-                    </p>
-                    <Button variant="secondary" onClick={() => navigate('/api-status')}>
-                      API Integration Status
-                    </Button>
-                  </div>
                 </div>
               </CardContent>
             </Card>
