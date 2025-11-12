@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Post } from '@shared/types';
 import { api } from '@/lib/api-client';
 import { Toaster, toast } from '@/components/ui/sonner';
@@ -11,28 +11,86 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Waves } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { PostDetail } from '@/components/PostDetail';
+import { PostLoader } from '@/components/PostLoader';
 type FilterType = 'all' | 'instagram' | 'threads';
 type SortType = 'trending' | 'newest';
 export function HomePage() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [sort, setSort] = useState<SortType>('trending');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        const fetchedPosts = await api<Post[]>('/api/posts');
-        setPosts(fetchedPosts);
-      } catch (error) {
+  const observer = useRef<IntersectionObserver>();
+  const loadMoreRef = useCallback((node: HTMLDivElement) => {
+    if (initialLoading || loadingMore) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && nextCursor) {
+        fetchMorePosts();
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [initialLoading, loadingMore, nextCursor]);
+  const fetchPosts = async (isNewFilter = false) => {
+    if (isNewFilter) {
+      setInitialLoading(true);
+      setPosts([]);
+      setNextCursor(null);
+    } else {
+      setLoadingMore(true);
+    }
+    try {
+      const url = `/api/posts?limit=9${nextCursor && !isNewFilter ? `&cursor=${nextCursor}` : ''}`;
+      const { items, next } = await api<{ items: Post[]; next: string | null }>(url);
+      setPosts(prevPosts => isNewFilter ? items : [...prevPosts, ...items]);
+      setNextCursor(next);
+    } catch (error) {
+      toast.error('Failed to fetch posts. Please try again later.');
+      console.error(error);
+    } finally {
+      if (isNewFilter) {
+        setInitialLoading(false);
+      } else {
+        setLoadingMore(false);
+      }
+    }
+  };
+  const fetchInitialPosts = () => {
+    setInitialLoading(true);
+    setPosts([]);
+    setNextCursor(null);
+    api<{ items: Post[]; next: string | null }>(`/api/posts?limit=9`)
+      .then(({ items, next }) => {
+        setPosts(items);
+        setNextCursor(next);
+      })
+      .catch(error => {
         toast.error('Failed to fetch posts. Please try again later.');
         console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
+      })
+      .finally(() => {
+        setInitialLoading(false);
+      });
+  };
+  const fetchMorePosts = useCallback(async () => {
+    if (loadingMore || !nextCursor) return;
+    setLoadingMore(true);
+    try {
+      const url = `/api/posts?limit=9&cursor=${nextCursor}`;
+      const { items, next } = await api<{ items: Post[]; next: string | null }>(url);
+      setPosts(prev => [...prev, ...items]);
+      setNextCursor(next);
+    } catch (error) {
+      toast.error('Failed to fetch more posts.');
+      console.error(error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [nextCursor, loadingMore]);
+  useEffect(() => {
+    fetchInitialPosts();
   }, []);
   const filteredAndSortedPosts = useMemo(() => {
     let result = posts;
@@ -93,7 +151,7 @@ export function HomePage() {
             </div>
           </motion.div>
           <div className="pb-16 md:pb-24 lg:pb-32">
-            {loading ? (
+            {initialLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 {Array.from({ length: 9 }).map((_, i) => <PostSkeleton key={i} />)}
               </div>
@@ -103,7 +161,7 @@ export function HomePage() {
                   layout
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
                 >
-                  {filteredAndSortedPosts.map(post => (
+                  {filteredAndSortedPosts.map((post, index) => (
                     <motion.div
                       key={post.id}
                       layout
@@ -115,6 +173,8 @@ export function HomePage() {
                       <PostCard post={post} onPostSelect={setSelectedPost} />
                     </motion.div>
                   ))}
+                  {(loadingMore || nextCursor) && <div ref={loadMoreRef} className="col-span-full" />}
+                  {loadingMore && <PostLoader />}
                 </motion.div>
               </AnimatePresence>
             )}

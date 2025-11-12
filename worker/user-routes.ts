@@ -48,9 +48,11 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
   // POSTS
   app.get('/api/posts', async (c) => {
     await PostEntity.ensureSeed(c.env);
-    const { items } = await PostEntity.list(c.env);
-    // Return a simple array of posts, not a paginated object for this use case
-    return ok(c, items);
+    const cursor = c.req.query('cursor');
+    const limitQuery = c.req.query('limit');
+    const limit = limitQuery ? parseInt(limitQuery, 10) : 9;
+    const page = await PostEntity.list(c.env, cursor ?? null, limit);
+    return ok(c, page);
   });
   // DELETE: Users
   app.delete('/api/users/:id', async (c) => ok(c, { id: c.req.param('id'), deleted: await UserEntity.delete(c.env, c.req.param('id')) }));
