@@ -46,6 +46,10 @@ const MOCK_POSTS: Post[] = [
     likes: 12034,
     comments: 489,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+    mockComments: [
+      { id: 'c1-1', authorName: 'DevRel', authorHandle: 'devrel', authorAvatar: 'https://i.pravatar.cc/150?u=devrel', content: 'Workers is a game changer!', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 1).toISOString() },
+      { id: 'c1-2', authorName: 'Startup Founder', authorHandle: 'founder123', authorAvatar: 'https://i.pravatar.cc/150?u=founder123', content: 'We built our entire stack on Cloudflare. Never been faster.', createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString() },
+    ]
   },
   {
     id: 'p2',
@@ -58,6 +62,11 @@ const MOCK_POSTS: Post[] = [
     comments: 3200,
     shares: 4500,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+    mockComments: [
+      { id: 'c2-1', authorName: 'Book Worm', authorHandle: 'booklover', authorAvatar: 'https://i.pravatar.cc/150?u=booklover', content: '"The Midnight Library" by Matt Haig is a fantastic read!', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString() },
+      { id: 'c2-2', authorName: 'Reader Digest', authorHandle: 'reader', authorAvatar: 'https://i.pravatar.cc/150?u=reader', content: 'Just started "Project Hail Mary", can\'t put it down!', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString() },
+      { id: 'c2-3', authorName: 'Sarah J.', authorHandle: 'sarahj', authorAvatar: 'https://i.pravatar.cc/150?u=sarahj', content: 'Highly recommend "Becoming" 😉', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() },
+    ]
   },
   {
     id: 'p3',
@@ -71,6 +80,9 @@ const MOCK_POSTS: Post[] = [
     likes: 250000,
     comments: 1200,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 22).toISOString(),
+    mockComments: [
+        { id: 'c3-1', authorName: 'Traveler', authorHandle: 'globetrotter', authorAvatar: 'https://i.pravatar.cc/150?u=globetrotter', content: 'Bucket list item right there!', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 20).toISOString() },
+    ]
   },
   {
     id: 'p4',

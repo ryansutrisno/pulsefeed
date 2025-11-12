@@ -19,6 +19,15 @@ export interface ChatMessage {
   text: string;
   ts: number; // epoch millis
 }
+// PulseFeed Comment Type
+export interface Comment {
+  id: string;
+  authorName: string;
+  authorHandle: string;
+  authorAvatar: string;
+  content: string;
+  createdAt: string; // ISO 8601 string
+}
 // PulseFeed Post Type
 export interface Post {
   id: string;
@@ -33,4 +42,5 @@ export interface Post {
   comments: number;
   shares?: number; // Threads has shares/reposts
   createdAt: string; // ISO 8601 string
+  mockComments?: Comment[];
 }

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, Heart, Repeat, Send, Instagram } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { useMemo } from "react";
+import { cn } from "@/lib/utils";
 // A custom component for the Threads icon
 const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -22,13 +23,21 @@ const formatNumber = (num: number): string => {
   if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
   return num.toString();
 };
-export function PostCard({ post }: { post: Post }) {
+interface PostCardProps {
+    post: Post;
+    onPostSelect: (post: Post) => void;
+    className?: string;
+}
+export function PostCard({ post, onPostSelect, className }: PostCardProps) {
   const timeAgo = useMemo(() => {
     return formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
   }, [post.createdAt]);
   const PlatformIcon = post.platform === 'instagram' ? Instagram : ThreadsIcon;
   return (
-    <Card className="overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col h-full">
+    <Card 
+        className={cn("overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col h-full cursor-pointer", className)}
+        onClick={() => onPostSelect(post)}
+    >
       <CardHeader className="flex flex-row items-center gap-3 p-4">
         <Avatar>
           <AvatarImage src={post.authorAvatar} alt={post.authorName} />
@@ -58,22 +67,22 @@ export function PostCard({ post }: { post: Post }) {
         <p className="text-xs text-muted-foreground mb-3">{timeAgo}</p>
         <div className="flex items-center justify-between w-full text-muted-foreground">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="w-auto h-auto p-1 group">
-              <Heart className="w-5 h-5 group-hover:text-red-500 group-hover:fill-red-500 transition-colors" />
+            <div className="flex items-center group">
+              <Heart className="w-5 h-5" />
               <span className="text-sm ml-2 font-medium">{formatNumber(post.likes)}</span>
-            </Button>
-            <Button variant="ghost" size="icon" className="w-auto h-auto p-1 group">
-              <MessageCircle className="w-5 h-5 group-hover:text-primary transition-colors" />
+            </div>
+            <div className="flex items-center group">
+              <MessageCircle className="w-5 h-5" />
               <span className="text-sm ml-2 font-medium">{formatNumber(post.comments)}</span>
-            </Button>
+            </div>
             {post.platform === 'threads' && post.shares != null && (
-              <Button variant="ghost" size="icon" className="w-auto h-auto p-1 group">
-                <Repeat className="w-5 h-5 group-hover:text-green-500 transition-colors" />
+              <div className="flex items-center group">
+                <Repeat className="w-5 h-5" />
                 <span className="text-sm ml-2 font-medium">{formatNumber(post.shares)}</span>
-              </Button>
+              </div>
             )}
           </div>
-          <Button variant="ghost" size="icon" className="group">
+          <Button variant="ghost" size="icon" className="group -mr-2" onClick={(e) => e.stopPropagation()}>
             <Send className="w-5 h-5 group-hover:text-primary transition-colors" />
           </Button>
         </div>
