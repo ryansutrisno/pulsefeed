@@ -23,6 +23,21 @@ export function HomePage() {
   const [sort, setSort] = useState<SortType>('trending');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const observer = useRef<IntersectionObserver>();
+  const fetchMorePosts = useCallback(async () => {
+    if (loadingMore || !nextCursor) return;
+    setLoadingMore(true);
+    try {
+      const url = `/api/posts?limit=9&cursor=${nextCursor}`;
+      const { items, next } = await api<{ items: Post[]; next: string | null }>(url);
+      setPosts(prev => [...prev, ...items]);
+      setNextCursor(next);
+    } catch (error) {
+      toast.error('Failed to fetch more posts.');
+      console.error(error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [nextCursor, loadingMore]);
   const loadMoreRef = useCallback((node: HTMLDivElement) => {
     if (initialLoading || loadingMore) return;
     if (observer.current) observer.current.disconnect();
@@ -32,7 +47,7 @@ export function HomePage() {
       }
     });
     if (node) observer.current.observe(node);
-  }, [initialLoading, loadingMore, nextCursor]);
+  }, [initialLoading, loadingMore, nextCursor, fetchMorePosts]);
   const fetchInitialPosts = () => {
     setInitialLoading(true);
     setPosts([]);
@@ -50,21 +65,6 @@ export function HomePage() {
         setInitialLoading(false);
       });
   };
-  const fetchMorePosts = useCallback(async () => {
-    if (loadingMore || !nextCursor) return;
-    setLoadingMore(true);
-    try {
-      const url = `/api/posts?limit=9&cursor=${nextCursor}`;
-      const { items, next } = await api<{ items: Post[]; next: string | null }>(url);
-      setPosts(prev => [...prev, ...items]);
-      setNextCursor(next);
-    } catch (error) {
-      toast.error('Failed to fetch more posts.');
-      console.error(error);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [nextCursor, loadingMore]);
   useEffect(() => {
     fetchInitialPosts();
   }, []);
@@ -167,8 +167,11 @@ export function HomePage() {
             )}
           </div>
         </main>
-        <footer className="text-center py-8 border-t">
-          <p className="text-muted-foreground">Built with ❤️ at Cloudflare</p>
+        <footer className="text-center py-8 border-t space-y-2">
+          <p className="text-muted-foreground">Built with ❤��� at Cloudflare</p>
+          <p className="text-xs text-muted-foreground/80 px-4">
+            Disclaimer: All content is for demonstration purposes only and is not from live Instagram or Threads APIs.
+          </p>
         </footer>
         <Toaster richColors />
       </div>
