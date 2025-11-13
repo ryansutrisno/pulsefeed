@@ -1,6 +1,6 @@
 # PulseFeed
 An elegant web application for discovering and viewing viral content from Instagram and Threads in a clean, unified feed.
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/ryansutrisno/pulsefeed)
 PulseFeed is a minimalist and visually stunning web application designed to aggregate and display trending and viral content from Instagram and Threads. It provides a seamless, curated experience for users to discover the most talked-about posts without the noise of their regular feeds. The application features a clean, card-based layout where each card represents a viral post, displaying the content, author information, engagement metrics, and source platform.
 ## API Integration & Mock Data: A Production-Grade UI Demonstration
 This application serves as a production-grade UI/UX demonstration, utilizing a comprehensive, seeded mock dataset to simulate a live content feed. **Direct integration with live Instagram and Threads APIs is not feasible within this project's architecture.**
@@ -66,7 +66,7 @@ This project is designed for easy deployment to Cloudflare's global network.
     bun deploy
     ```
 Alternatively, you can deploy your own version of this project with a single click.
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/ryansutrisno/pulsefeed)
 ## Contributing
 Contributions are welcome! Please feel free to open an issue or submit a pull request if you have any improvements or features to add.
 1.  Fork the Project
